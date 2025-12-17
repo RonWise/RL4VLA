@@ -6,7 +6,7 @@ import signal
 from collections import defaultdict
 import time
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Optional
 import torch
 import numpy as np
 import tyro
@@ -43,6 +43,16 @@ class Args:
     num_envs: int = 64
     episode_len: int = 80
     use_same_init: bool = False
+    
+    # robot configuration
+    robot_control_mode: str = "arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos"
+    """Control mode for the robot. Default matches OpenVLA training setup."""
+    sim_freq: int = 500
+    """Simulation frequency in Hz. Default is 500 Hz."""
+    control_freq: int = 5
+    """Control frequency in Hz. Default is 5 Hz (matches OpenVLA training)."""
+    robot_uids: Optional[str] = None
+    """Robot type/UID. If None, uses environment default."""
 
     steps_max: int = 2000000
     steps_vh: int = 0  # episodes

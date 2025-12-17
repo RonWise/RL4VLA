@@ -1,0 +1,18 @@
+? ''
+: PutOnPlateInScene25VisionImage-v1:
+    test:
+      0:
+        consecutive_grasp: 0.34375
+        is_src_obj_grasped: 0.4375
+        path: /home/work/WORK/MIPT/repo/RL4VLA/SimplerEnv/wandb/wandb/offline-run-20251212_104511-1j33m6dy
+        success: 0.125
+      1:
+        consecutive_grasp: 0.40625
+        is_src_obj_grasped: 0.59375
+        path: /home/work/WORK/MIPT/repo/RL4VLA/SimplerEnv/wandb/wandb/offline-run-20251212_110502-4d4rvc0b
+        success: 0.125
+      2:
+        consecutive_grasp: 0.21875
+        is_src_obj_grasped: 0.25
+        path: /home/work/WORK/MIPT/repo/RL4VLA/SimplerEnv/wandb/wandb/offline-run-20251212_112507-ig6kd9sg
+        success: 0.09375

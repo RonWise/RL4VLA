@@ -10,7 +10,9 @@ class SimlerWrapper:
         self.unnorm_state = unnorm_state
 
         self.num_envs = self.args.num_envs
-        robot_control_mode = "arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos"
+        robot_control_mode = self.args.robot_control_mode
+        sim_freq = self.args.sim_freq
+        control_freq = self.args.control_freq
 
         env_config = dict(
             id=self.args.env_id,
@@ -18,13 +20,21 @@ class SimlerWrapper:
             obs_mode="rgb+segmentation",
             control_mode=robot_control_mode,
             sim_backend="gpu",
-            sim_config={
-                "sim_freq": 500,
-                "control_freq": 5,
-            },
             max_episode_steps=self.args.episode_len,
             sensor_configs={"shader_pack": "default"},
         )
+        
+        # Only override sim_config if values differ from environment defaults (500, 5)
+        # This allows environments to use their own optimized defaults
+        if sim_freq != 500 or control_freq != 5:
+            env_config["sim_config"] = {
+                "sim_freq": sim_freq,
+                "control_freq": control_freq,
+            }
+        
+        # Add robot_uids if specified (overrides environment default)
+        if hasattr(self.args, 'robot_uids') and self.args.robot_uids is not None:
+            env_config["robot_uids"] = self.args.robot_uids
         self.env: BaseEnv = gym.make(**env_config)
         self.env.reset(seed=[self.args.seed * 1000 + i + extra_seed for i in range(self.args.num_envs)])
 
