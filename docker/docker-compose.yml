@@ -1,0 +1,52 @@
+services:
+  rl4vla:
+    # If DOCKERHUB_IMAGE is set, use ready image from Docker Hub
+    # Otherwise build from source
+    image: ${DOCKERHUB_IMAGE:-rl4vla:latest}
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: rl4vla-container
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      # CUDA_VISIBLE_DEVICES is set by scripts via --gpu-id argument
+      - PYTHONPATH=/workspace:/workspace/ManiSkill
+      - DISPLAY=
+      - PYOPENGL_PLATFORM=egl
+      # Force wandb to save in the mounted directory
+      # Can be overridden via -e WANDB_DIR=/workspace/custom/path when running
+      - WANDB_DIR=${WANDB_DIR:-/workspace/SimplerEnv/results}
+      # Auto-download ManiSkill assets without prompt
+      - MS_SKIP_ASSET_DOWNLOAD_PROMPT=1
+      # Set ManiSkill asset directory to mounted location
+      - MS_ASSET_DIR=/workspace/.maniskill
+    volumes:
+      # Mount entire project directory (includes all subdirectories)
+      - ..:/workspace
+      # Cache for HuggingFace models (persistent across containers)
+      - ~/.cache/huggingface:/root/.cache/huggingface
+      - ../models:/workspace/models
+      # Explicit mount for results to ensure data persists on host
+      - ../SimplerEnv/wandb:/workspace/SimplerEnv/wandb
+      - ../SimplerEnv/results:/workspace/SimplerEnv/results
+      # Mount checkpoints directory for checkpoint conversion
+      - ../checkpoints:/workspace/checkpoints
+      # Mount ManiSkill assets directory (use existing ~/.maniskill on host)
+      - ~/.maniskill:/workspace/.maniskill
+      # Mount Sapien cache directory (PhysX GPU library) to persist on host
+      - ~/.sapien:/root/.sapien
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    shm_size: "32gb"
+    # Packages are now installed in the Docker image, so no need to install them here
+    # Volumes will mount the latest code from host, but packages are already installed
+    command: /bin/bash
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
