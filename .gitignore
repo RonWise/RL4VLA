@@ -297,3 +297,4 @@ desktop.ini
 checkpoints/
 results/
 SimplerEnv/wandb/
+SimplerEnv/scripts/stats/
